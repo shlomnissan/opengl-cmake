@@ -16,7 +16,9 @@
 #include "mesh/cube.h"
 
 auto main() -> int {
-    auto window = Window {800, 600, "OpenGL starter project"};
+    const auto width = 800;
+    const auto height = 600;
+    auto window = Window {width, height, "OpenGL starter project"};
 
     auto shader = Shader {{
         {ShaderType::kVertexShader, _SHADER_vertex},
@@ -26,11 +28,15 @@ auto main() -> int {
     glEnable(GL_DEPTH_TEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    shader.Use();
-    shader.SetMat4(
-        "Projection",
-        glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f)
-    );
+    auto updateProjection = [&shader](int width, int height) {
+        auto ratio = static_cast<float>(width) / static_cast<float>(height);
+        shader.SetMat4("Projection", glm::perspective(45.0f, ratio, 0.1f, 100.0f));
+    };
+
+    updateProjection(width, height);
+    window.on_resize([&updateProjection](const int width, const int height){
+        updateProjection(width, height);
+    });
 
     auto view = glm::lookAt(
         glm::vec3{0.0f, 0.0f, 1.0f},

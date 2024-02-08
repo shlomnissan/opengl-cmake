@@ -14,6 +14,10 @@ constexpr auto callback_error =
 constexpr auto callback_resize =
 [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
+    auto instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    if (instance->on_resize()) {
+        instance->on_resize()(width, height);
+    } 
 };
 
 Window::Window(int width, int height, std::string_view title) {
@@ -43,6 +47,7 @@ Window::Window(int width, int height, std::string_view title) {
 
     glfwSwapInterval(1);
     glfwSetFramebufferSizeCallback(window_, callback_resize);
+    glfwSetWindowUserPointer(window_, this);
 
     glViewport(0, 0, width, height);
 }

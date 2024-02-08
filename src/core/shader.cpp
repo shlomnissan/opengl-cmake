@@ -102,6 +102,7 @@ auto Shader::SetMat4(std::string_view uniform, const glm::mat4& matrix) const ->
 }
 
 auto Shader::GetUniform(std::string_view name) const -> GLint {
+    Use();
     auto loc = glGetUniformLocation(program_, name.data());
     if (loc < 0) {
         throw ShaderError {
