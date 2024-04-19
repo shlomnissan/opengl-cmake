@@ -10,8 +10,8 @@
 #include "core/shader.h"
 #include "core/window.h"
 
-#include "shaders/headers/vertex.h"
-#include "shaders/headers/fragment.h"
+#include "shaders/headers/scene_vert.h"
+#include "shaders/headers/scene_frag.h"
 
 #include "mesh/cube.h"
 
@@ -21,10 +21,10 @@ auto main() -> int {
     auto window = Window {width, height, "OpenGL starter project"};
 
     auto shader = Shader {{
-        {ShaderType::kVertexShader, _SHADER_vertex},
-        {ShaderType::kFragmentShader, _SHADER_fragment}
+        {ShaderType::kVertexShader, _SHADER_scene_vert},
+        {ShaderType::kFragmentShader, _SHADER_scene_frag}
     }};
-    
+
     glEnable(GL_DEPTH_TEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -55,7 +55,7 @@ auto main() -> int {
         model = glm::rotate(model, static_cast<float>(glfwGetTime()), {1.0f, 1.0f, 1.0f});
         shader.SetMat4("ModelView", view * model);
 
-        cube.Draw(shader); 
+        cube.Draw(shader);
     });
 
     return 0;
