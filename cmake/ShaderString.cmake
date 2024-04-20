@@ -2,9 +2,7 @@
 # Author: Shlomi Nissan (shlomi@betamark.com)
 #
 # ShaderString.cmake
-# ------------------
-# This function looks for .glsl/.vert/.frag files and converts them
-# into C-style strings
+# This function looks for GLSL files and converts them into C-style strings
 
 function(ShaderString)
 
@@ -21,7 +19,7 @@ foreach(SHADER IN LISTS SHADERS)
     message("🎨 Writing shader ${FILENAME_NO_EXT}.h")
 
     file(READ ${SHADER} CONTENTS)
-    file(WRITE ${HEADER_FILE} "static const char* _SHADER_${FILENAME_NO_EXT}${EXT} = R\"(")
+    file(WRITE ${HEADER_FILE} "#pragma once\n\nstatic const char* _SHADER_${FILENAME_NO_EXT}${EXT} = R\"(")
     file(APPEND ${HEADER_FILE} "${CONTENTS}")
     file(APPEND ${HEADER_FILE} ")\";")
 endforeach()
