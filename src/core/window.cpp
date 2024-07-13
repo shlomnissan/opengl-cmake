@@ -13,11 +13,13 @@ constexpr auto callback_error =
 
 constexpr auto callback_resize =
 [](GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
+    auto buffer_width {0}, buffer_height {0};
+    glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
+    glViewport(0, 0, buffer_width, buffer_height);
     auto instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
     if (instance->on_resize()) {
         instance->on_resize()(width, height);
-    } 
+    }
 };
 
 Window::Window(int width, int height, std::string_view title) {
@@ -33,8 +35,11 @@ Window::Window(int width, int height, std::string_view title) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window_ = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+    #ifdef __APPLE__
+        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+    #endif
 
+    window_ = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
     if (window_ == nullptr) {
         glfwTerminate();
         return;
@@ -49,7 +54,9 @@ Window::Window(int width, int height, std::string_view title) {
     glfwSetFramebufferSizeCallback(window_, callback_resize);
     glfwSetWindowUserPointer(window_, this);
 
-    glViewport(0, 0, width, height);
+    auto buffer_width {0}, buffer_height {0};
+    glfwGetFramebufferSize(window_, &buffer_width, &buffer_height);
+    glViewport(0, 0, buffer_width, buffer_height);
 }
 
 auto Window::Start(const std::function<void(const double delta)> &program) -> void {
