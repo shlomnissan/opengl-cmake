@@ -60,11 +60,11 @@ Window::Window(int width, int height, std::string_view title) {
 }
 
 auto Window::Start(const std::function<void(const double delta)> &program) -> void {
-    auto last_frame = 0.0f;
+    timer_.Reset();
+
     while(!glfwWindowShouldClose(window_)) {
-        auto time = glfwGetTime();
-        auto delta = time - last_frame;
-        last_frame = time;
+        auto delta = timer_.GetSeconds();
+        timer_.Reset();
 
         program(delta);
 

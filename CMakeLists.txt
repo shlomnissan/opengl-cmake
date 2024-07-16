@@ -25,6 +25,7 @@ set(CORE_SOURCES
     src/core/mesh.h
     src/core/shader.cpp
     src/core/shader.h
+    src/core/timer.h
     src/core/window.cpp
     src/core/window.h
 )
