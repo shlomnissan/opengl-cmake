@@ -15,8 +15,9 @@ message(${CMAKE_SOURCE_DIR}/cmake)
 include(cmake/ShaderString.cmake)
 ShaderString()
 
-find_package(fmt REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(fmt REQUIRED)
+find_package(glad REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
@@ -30,10 +31,6 @@ set(CORE_SOURCES
     src/core/window.h
 )
 
-set(LIBS_SOURCES
-    libs/glad/glad.c
-)
-
 set(DEMO_SOURCES
     src/main.cpp
 )
@@ -45,4 +42,4 @@ target_include_directories(opengl-cmake PRIVATE
     ${CMAKE_SOURCE_DIR}/libs
 )
 
-target_link_libraries(opengl-cmake PRIVATE fmt::fmt glfw glm::glm OpenGL::GL)
+target_link_libraries(opengl-cmake PRIVATE fmt::fmt glfw glad::glad glm::glm OpenGL::GL)
