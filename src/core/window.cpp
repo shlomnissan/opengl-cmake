@@ -3,12 +3,14 @@
 
 #include "window.h"
 
+#include <format>
+#include <iostream>
+
 #include <GLFW/glfw3.h>
-#include <fmt/format.h>
 
 constexpr auto callback_error =
 [](int error, const char* message) {
-    fmt::print("Error ({}): {}\n", error, message);
+    std::cout << std::format("Error ({}): {}\n", error, message);
 };
 
 constexpr auto callback_resize =

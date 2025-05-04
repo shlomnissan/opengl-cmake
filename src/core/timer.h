@@ -4,8 +4,8 @@
 #pragma once
 
 #include <chrono>
-
-#include <fmt/printf.h>
+#include <format>
+#include <iostream>
 
 using Clock = std::chrono::steady_clock;
 
@@ -27,7 +27,7 @@ public:
 
     auto Reset() { start_time_ = Clock::now(); }
 
-    auto Print() const { fmt::print("{}ms\n", GetMilliseconds()); }
+    auto Print() const { std::cout << std::format("{}ms\n", GetMilliseconds()); }
 
 private:
     std::chrono::time_point<Clock> start_time_;
