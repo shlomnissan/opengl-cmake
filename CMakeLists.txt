@@ -23,6 +23,7 @@ find_package(glm REQUIRED)
 set(CORE_SOURCES
     src/core/geometry.cpp
     src/core/geometry.h
+    src/core/image.h
     src/core/orthographic_camera.cpp
     src/core/orthographic_camera.h
     src/core/perspective_camera.cpp
@@ -36,6 +37,9 @@ set(CORE_SOURCES
     src/geometries/box_geometry.h
     src/geometries/plane_geometry.cpp
     src/geometries/plane_geometry.h
+    src/loaders/image_loader.cpp
+    src/loaders/image_loader.h
+    src/loaders/loader.h
 )
 
 set(DEMO_SOURCES
