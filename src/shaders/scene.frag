@@ -2,8 +2,12 @@
 #pragma debug(on)
 #pragma optimize(off)
 
-out vec4 final_color;
+layout (location = 0) out vec4 FragColor;
+
+in vec2 v_TexCoord;
+
+uniform sampler2D u_TextureMap;
 
 void main() {
-    final_color = vec4(1.0, 1.0, 1.0, 1.0);
+    FragColor = texture(u_TextureMap, v_TexCoord);
 }

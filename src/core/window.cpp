@@ -42,7 +42,7 @@ Window::Window(int width, int height, std::string_view title) {
         return;
     }
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0); // disable vsync
     glfwSetWindowUserPointer(window_, this);
 
     auto buffer_width {0}, buffer_height {0};

@@ -25,6 +25,7 @@ public:
     unsigned int depth {0};
 
     Image(const Parameters& params, ImageData data) :
+        filename(params.filename),
         width(params.width),
         height(params.height),
         depth(params.depth),

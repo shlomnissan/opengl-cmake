@@ -12,9 +12,18 @@
 # conan/cmake
 
 src/shaders/headers/*.h
+src/shaders/snippets/headers/*.h
 build/*
+release/*
 CMakeUserPresets.json
 
-# misc
+imgui.ini
 
-*.xit
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes

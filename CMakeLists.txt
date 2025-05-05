@@ -30,6 +30,8 @@ set(CORE_SOURCES
     src/core/perspective_camera.h
     src/core/shaders.cpp
     src/core/shaders.h
+    src/core/texture2d.cpp
+    src/core/texture2d.h
     src/core/timer.h
     src/core/window.cpp
     src/core/window.h
@@ -51,6 +53,13 @@ add_executable(opengl-cmake ${LIBS_SOURCES} ${CORE_SOURCES} ${DEMO_SOURCES})
 target_include_directories(opengl-cmake PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/libs
+)
+
+add_custom_command(
+    TARGET opengl-cmake POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets
+    $<TARGET_FILE_DIR:opengl-cmake>/assets
 )
 
 target_link_libraries(opengl-cmake PRIVATE glfw glad::glad glm::glm OpenGL::GL)

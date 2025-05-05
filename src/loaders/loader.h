@@ -24,7 +24,9 @@ template <typename Resource>
 class Loader  {
 public:
     auto Load(const fs::path& path, LoaderCallback<Resource> callback) const {
-        if (!ValidateFile(path, callback)) return;
+        if (!ValidateFile(path, callback)) {
+            return;
+        }
 
         auto resource = std::static_pointer_cast<Resource>(LoadImpl(path));
         if (resource) {
@@ -48,7 +50,6 @@ private:
         if (!ValidateFileType(path)) {
             const auto& str = path.extension().string();
             const auto message = std::format("Unsupported file type '{}'", str);
-            std::cerr << message << '\n';
             callback(std::unexpected(message));
             return false;
         }
@@ -56,7 +57,6 @@ private:
         if (!fs::exists(path)) {
             const auto& str = path.string();
             const auto message = std::format("File not found '{}'", str);
-            std::cerr << message << '\n';
             callback(std::unexpected(message));
             return false;
         }
