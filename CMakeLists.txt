@@ -28,6 +28,10 @@ set(CORE_SOURCES
     src/core/timer.h
     src/core/window.cpp
     src/core/window.h
+    src/geometries/box_geometry.cpp
+    src/geometries/box_geometry.h
+    src/geometries/plane_geometry.cpp
+    src/geometries/plane_geometry.h
 )
 
 set(DEMO_SOURCES

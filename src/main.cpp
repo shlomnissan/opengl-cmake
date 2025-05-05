@@ -1,5 +1,5 @@
-// Copyright 2024 Betamark Pty Ltd. All rights reserved.
-// Author: Shlomi Nissan (shlomi@betamark.com)
+// Copyright © 2024 - Present, Shlomi Nissan.
+// All rights reserved.
 
 #include <array>
 
@@ -13,7 +13,7 @@
 #include "shaders/headers/scene_vert.h"
 #include "shaders/headers/scene_frag.h"
 
-#include "mesh/cube.h"
+#include "geometries/box_geometry.h"
 
 auto main() -> int {
     const auto win_width = 1024;
@@ -43,7 +43,14 @@ auto main() -> int {
         glm::vec3{0.0f, 1.0f, 0.0f}
     );
 
-    auto cube = Geometry {cube_vertex_0, cube_index_0};
+    auto cube = BoxGeometry({
+        .width = 1.0f,
+        .height = 1.0f,
+        .depth = 1.0f,
+        .width_segments = 1,
+        .height_segments = 1,
+        .depth_segments = 1
+    });
 
     window.Start([&](const double _){
         glClearColor(0.0f, 0.0f, 0.5f, 1.0f);

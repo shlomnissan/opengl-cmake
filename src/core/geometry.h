@@ -1,5 +1,5 @@
-// Copyright 2024 Betamark Pty Ltd. All rights reserved.
-// Author: Shlomi Nissan (shlomi@betamark.com)
+// Copyright © 2024 - Present, Shlomi Nissan.
+// All rights reserved.
 
 #pragma once
 
@@ -13,7 +13,16 @@ public:
         const std::vector<float>& vertex_data,
         const std::vector<unsigned int>& index_data = {}
     );
+
     auto Draw(const Shaders& shader) const -> void;
+
+protected:
+    Geometry() = default;
+
+    auto SetVertexData(
+        const std::vector<float>& vertex_data,
+        const std::vector<unsigned int>& index_data = {}
+    ) -> void;
 
 private:
     unsigned int vao_ {0};

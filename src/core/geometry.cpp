@@ -1,7 +1,9 @@
-// Copyright 2024 Betamark Pty Ltd. All rights reserved.
-// Author: Shlomi Nissan (shlomi@betamark.com)
+// Copyright © 2024 - Present, Shlomi Nissan.
+// All rights reserved.
 
 #include "geometry.h"
+
+#include <iostream>
 
 #include <glad/glad.h>
 
@@ -12,6 +14,13 @@ Geometry::Geometry(
     const std::vector<float>& vertex_data,
     const std::vector<unsigned int>& index_data
 ) {
+    SetVertexData(vertex_data, index_data);
+}
+
+auto Geometry::SetVertexData(
+    const std::vector<float>& vertex_data,
+    const std::vector<unsigned int>& index_data
+) -> void {
     glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);
 
@@ -27,6 +36,11 @@ Geometry::Geometry(
 }
 
 auto Geometry::Draw(const Shaders& shader) const -> void {
+    if (vao_ == 0) {
+        std::cerr << "Geometry not initialized. Cannot draw." << std::endl;
+        return;
+    }
+
     shader.Use();
     glBindVertexArray(vao_);
     if (indices_size_ > 0) {
