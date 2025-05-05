@@ -13,17 +13,6 @@ constexpr auto callback_error =
     std::cout << std::format("Error ({}): {}\n", error, message);
 };
 
-constexpr auto callback_resize =
-[](GLFWwindow *window, int width, int height) {
-    auto buffer_width {0}, buffer_height {0};
-    glfwGetFramebufferSize(window, &buffer_width, &buffer_height);
-    glViewport(0, 0, buffer_width, buffer_height);
-    auto instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
-    if (instance->on_resize()) {
-        instance->on_resize()(width, height);
-    }
-};
-
 Window::Window(int width, int height, std::string_view title) {
     glfwSetErrorCallback(callback_error);
 
@@ -36,6 +25,7 @@ Window::Window(int width, int height, std::string_view title) {
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     #ifdef __APPLE__
         glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
@@ -53,7 +43,6 @@ Window::Window(int width, int height, std::string_view title) {
     }
 
     glfwSwapInterval(1);
-    glfwSetFramebufferSizeCallback(window_, callback_resize);
     glfwSetWindowUserPointer(window_, this);
 
     auto buffer_width {0}, buffer_height {0};
