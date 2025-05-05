@@ -1,4 +1,4 @@
-#version 460 core
+#version 410 core
 #pragma debug(on)
 #pragma optimize(off)
 
