@@ -19,6 +19,7 @@ find_package(OpenGL REQUIRED)
 find_package(glad REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 set(CORE_SOURCES
     src/core/events.h
@@ -50,11 +51,21 @@ set(DEMO_SOURCES
     src/main.cpp
 )
 
-add_executable(opengl-cmake ${LIBS_SOURCES} ${CORE_SOURCES} ${DEMO_SOURCES})
+set(EXTERNAL_SOURCES
+    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_impl_glfw.cpp"
+    "${CMAKE_SOURCE_DIR}/external/imgui/imgui_impl_opengl3.cpp"
+)
+
+add_executable(opengl-cmake
+    ${LIBS_SOURCES}
+    ${CORE_SOURCES}
+    ${DEMO_SOURCES}
+    ${EXTERNAL_SOURCES}
+)
 
 target_include_directories(opengl-cmake PRIVATE
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/libs
+    ${CMAKE_SOURCE_DIR}/external
 )
 
 add_custom_command(
@@ -64,4 +75,10 @@ add_custom_command(
     $<TARGET_FILE_DIR:opengl-cmake>/assets
 )
 
-target_link_libraries(opengl-cmake PRIVATE glfw glad::glad glm::glm OpenGL::GL)
+target_link_libraries(opengl-cmake PRIVATE
+    glfw
+    glad::glad
+    glm::glm
+    OpenGL::GL
+    imgui::imgui
+)

@@ -14,6 +14,10 @@
             "version>=": "1.0.1"
         },
         {
+            "name": "imgui",
+            "version>=": "1.91.6"
+        },
+        {
             "name": "stb",
             "version>=": "2024-07-29#1"
         }

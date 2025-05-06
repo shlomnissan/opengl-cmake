@@ -7,14 +7,23 @@
 #include <iostream>
 
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 #include "events.h"
 #include "event_dispatcher.h"
 
-static auto glfw_mouse_button_map(int button) -> MouseButton;
-static auto glfw_cursor_pos_callback(GLFWwindow*, double x, double y) -> void;
-static auto glfw_mouse_button_callback(GLFWwindow*, int button, int action, int mods) -> void;
-static auto glfw_scroll_callback(GLFWwindow*, double x, double y) -> void;
+static auto glfwMouseButtonMap(int button) -> MouseButton;
+static auto glfwCursorPosCallback(GLFWwindow*, double x, double y) -> void;
+static auto glfwMouseButtonCallback(GLFWwindow*, int button, int action, int mods) -> void;
+static auto glfwScrollCallback(GLFWwindow*, double x, double y) -> void;
+
+static auto imguiInitialize(GLFWwindow* window) -> void;
+static auto imguiBeforeRender() -> void;
+static auto imguiAfterRender() -> void;
+static auto imguiEvent() -> bool;
+static auto imguiCleanup() -> void;
 
 constexpr auto callback_error =
 [](int error, const char* message) {
@@ -55,9 +64,11 @@ Window::Window(int width, int height, std::string_view title) {
 
     glfwSwapInterval(0); // disable vsync
     glfwSetWindowUserPointer(window_, this);
-    glfwSetCursorPosCallback(window_, glfw_cursor_pos_callback);
-    glfwSetMouseButtonCallback(window_, glfw_mouse_button_callback);
-    glfwSetScrollCallback(window_, glfw_scroll_callback);
+    glfwSetCursorPosCallback(window_, glfwCursorPosCallback);
+    glfwSetMouseButtonCallback(window_, glfwMouseButtonCallback);
+    glfwSetScrollCallback(window_, glfwScrollCallback);
+
+    imguiInitialize(window_);
 
     auto buffer_width {0}, buffer_height {0};
     glfwGetFramebufferSize(window_, &buffer_width, &buffer_height);
@@ -68,22 +79,26 @@ auto Window::Start(const std::function<void(const double delta)> &program) -> vo
     timer_.Reset();
 
     while(!glfwWindowShouldClose(window_)) {
+        imguiBeforeRender();
+
         auto delta = timer_.GetSeconds();
         timer_.Reset();
 
         program(delta);
 
+        imguiAfterRender();
         glfwSwapBuffers(window_);
         glfwPollEvents();
     }
 }
 
 Window::~Window() {
+    imguiCleanup();
     glfwDestroyWindow(window_);
     glfwTerminate();
 }
 
-static auto glfw_cursor_pos_callback(GLFWwindow* _, double x, double y) -> void {
+static auto glfwCursorPosCallback(GLFWwindow* _, double x, double y) -> void {
     auto event = std::make_unique<MouseEvent>();
     event->type = MouseEvent::Type::Moved;
     event->button = MouseButton::None;
@@ -93,11 +108,13 @@ static auto glfw_cursor_pos_callback(GLFWwindow* _, double x, double y) -> void 
     EventDispatcher::Get().Dispatch("mouse_event", std::move(event));
 }
 
-static auto glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int) -> void {
+static auto glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int) -> void {
+    if (imguiEvent()) return;
+
     auto event = std::make_unique<MouseEvent>();
 
     event->type = MouseEvent::Type::ButtonPressed;
-    event->button = glfw_mouse_button_map(button);
+    event->button = glfwMouseButtonMap(button);
     event->scroll = {0.0f, 0.0f};
 
     if (action == GLFW_PRESS) {
@@ -110,7 +127,9 @@ static auto glfw_mouse_button_callback(GLFWwindow* window, int button, int actio
     }
 }
 
-static auto glfw_scroll_callback(GLFWwindow* window, double x, double y) -> void {
+static auto glfwScrollCallback(GLFWwindow* window, double x, double y) -> void {
+    if (imguiEvent()) return;
+
     auto event = std::make_unique<MouseEvent>();
 
     event->type = MouseEvent::Type::Scrolled;
@@ -120,7 +139,7 @@ static auto glfw_scroll_callback(GLFWwindow* window, double x, double y) -> void
     EventDispatcher::Get().Dispatch("mouse_event", std::move(event));
 }
 
-static auto glfw_mouse_button_map(int button) -> MouseButton {
+static auto glfwMouseButtonMap(int button) -> MouseButton {
     switch(button) {
         case GLFW_MOUSE_BUTTON_LEFT: return MouseButton::Left;
         case GLFW_MOUSE_BUTTON_RIGHT: return MouseButton::Right;
@@ -128,4 +147,33 @@ static auto glfw_mouse_button_map(int button) -> MouseButton {
         default: break;
     }
     return MouseButton::None;
+}
+
+static auto imguiInitialize(GLFWwindow* window) -> void {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
+}
+
+static auto imguiBeforeRender() -> void {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+static auto imguiAfterRender() -> void {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+static auto imguiEvent() -> bool {
+    ImGuiIO& io = ImGui::GetIO();
+    return io.WantCaptureMouse || io.WantCaptureKeyboard;
+}
+
+static auto imguiCleanup() -> void {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }
