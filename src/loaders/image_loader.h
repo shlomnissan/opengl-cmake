@@ -16,11 +16,15 @@ using ImageCallback = std::function<void(std::shared_ptr<Image>)>;
 
 class ImageLoader : public Loader<Image> {
 public:
-    ImageLoader() = default;
+    [[nodiscard]] static auto Create() -> std::shared_ptr<ImageLoader> {
+        return std::shared_ptr<ImageLoader>(new ImageLoader());
+    }
 
     ~ImageLoader() override = default;
 
 private:
+    ImageLoader() = default;
+
     [[nodiscard]] auto ValidFileExtensions() const -> std::vector<std::string> override;
 
     [[nodiscard]] auto LoadImpl(const fs::path& path) const -> std::shared_ptr<void> override;

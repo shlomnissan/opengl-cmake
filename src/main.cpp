@@ -26,7 +26,7 @@ auto main() -> int {
     auto window = Window {win_width, win_height, "OpenGL starter project"};
     auto ratio = static_cast<float>(win_width) / static_cast<float>(win_height);
     auto camera = PerspectiveCamera {45.0f, ratio, 0.1f, 100.0f};
-    auto image_loader = ImageLoader {};
+    auto image_loader = ImageLoader::Create();
     auto texture = Texture2D {};
     auto geometry = BoxGeometry({
         .width = 1.0f,
@@ -42,12 +42,12 @@ auto main() -> int {
         {ShaderType::kFragmentShader, _SHADER_scene_frag}
     }};
 
-    image_loader.Load("assets/checker.png", [&](const auto& image) {
+    image_loader->LoadAsync("assets/checker.png", [&](const auto& image) {
         if (!image) {
             std::cerr << image.error() << '\n';
             return;
         }
-        texture.SetTexture(image.value());
+        texture.SetImage(image.value());
     });
 
     glEnable(GL_DEPTH_TEST);
@@ -69,8 +69,10 @@ auto main() -> int {
         shader.SetUniform("u_Projection", camera.Projection());
         shader.SetUniform("u_ModelView", view * model);
 
-        texture.Bind();
-        geometry.Draw(shader);
+        if (texture.IsLoaded()) {
+            texture.Bind();
+            geometry.Draw(shader);
+        }
     });
 
     return 0;

@@ -5,11 +5,13 @@
 
 #include <glad/glad.h>
 
+#include <iostream>
+
 Texture2D::Texture2D(std::shared_ptr<Image> image) {
-    SetTexture(image);
+    InitTexture(image);
 }
 
-auto Texture2D::SetTexture(std::shared_ptr<Image> image) -> void {
+auto Texture2D::InitTexture(std::shared_ptr<Image> image) -> void {
     glGenTextures(1, &texture_id_);
     glBindTexture(GL_TEXTURE_2D, texture_id_);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -27,7 +29,26 @@ auto Texture2D::SetTexture(std::shared_ptr<Image> image) -> void {
     is_loaded_ = true;
 }
 
-auto Texture2D::Bind() const -> void {
+auto Texture2D::SetImage(std::shared_ptr<Image> image) -> void {
+    if (is_loaded_) {
+        glDeleteTextures(1, &texture_id_);
+        texture_id_ = 0;
+    }
+    image_ = image;
+    is_loaded_ = true;
+}
+
+auto Texture2D::Bind() -> void {
+    if (texture_id_ == 0 && image_ != nullptr) {
+        InitTexture(image_);
+        image_ = nullptr;
+    }
+
+    if (texture_id_ == 0) {
+        std::cerr << "Attempting to bind a texture that is not loaded\n";
+        return;
+    }
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id_);
 }

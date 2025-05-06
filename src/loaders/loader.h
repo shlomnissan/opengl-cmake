@@ -10,6 +10,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -21,12 +22,10 @@ template <typename T>
 using LoaderCallback = std::function<void(LoaderResult<T>)>;
 
 template <typename Resource>
-class Loader  {
+class Loader : public std::enable_shared_from_this<Loader<Resource>> {
 public:
     auto Load(const fs::path& path, LoaderCallback<Resource> callback) const {
-        if (!ValidateFile(path, callback)) {
-            return;
-        }
+        if (!ValidateFile(path, callback)) return;
 
         auto resource = std::static_pointer_cast<Resource>(LoadImpl(path));
         if (resource) {
@@ -36,6 +35,21 @@ public:
             std::cerr << message << '\n';
             callback(std::unexpected(message));
         }
+    }
+
+    auto LoadAsync(const fs::path& path, LoaderCallback<Resource> callback) const {
+        if (!ValidateFile(path, callback)) return;
+        auto self = this->shared_from_this();
+        std::thread([self, path, callback]() {
+            auto resource = std::static_pointer_cast<Resource>(self->LoadImpl(path));
+            if (resource) {
+                callback(resource);
+            } else {
+                const auto message = std::format("Failed to load resource '{}'", path.string());
+                std::cerr << message << '\n';
+                callback(std::unexpected(message));
+            }
+        }).detach();
     }
 
     virtual ~Loader() = default;
