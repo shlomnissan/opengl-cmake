@@ -9,7 +9,7 @@
 .history/
 *.vsix
 
-# conan/cmake
+# cmake
 
 src/shaders/headers/*.h
 src/shaders/snippets/headers/*.h

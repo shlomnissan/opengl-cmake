@@ -21,6 +21,8 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
 set(CORE_SOURCES
+    src/core/events.h
+    src/core/event_dispatcher.h
     src/core/geometry.cpp
     src/core/geometry.h
     src/core/image.h
