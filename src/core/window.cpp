@@ -98,7 +98,11 @@ Window::~Window() {
     glfwTerminate();
 }
 
-static auto glfwCursorPosCallback(GLFWwindow* _, double x, double y) -> void {
+static auto glfwCursorPosCallback(GLFWwindow* window, double x, double y) -> void {
+    auto instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    instance->mouse_pos_x = x;
+    instance->mouse_pos_y = y;
+
     auto event = std::make_unique<MouseEvent>();
     event->type = MouseEvent::Type::Moved;
     event->button = MouseButton::None;
@@ -112,9 +116,14 @@ static auto glfwMouseButtonCallback(GLFWwindow* window, int button, int action, 
     if (imguiEvent()) return;
 
     auto event = std::make_unique<MouseEvent>();
+    auto instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
     event->type = MouseEvent::Type::ButtonPressed;
     event->button = glfwMouseButtonMap(button);
+    event->position = {
+        static_cast<float>(instance->mouse_pos_x),
+        static_cast<float>(instance->mouse_pos_y)
+    };
     event->scroll = {0.0f, 0.0f};
 
     if (action == GLFW_PRESS) {
@@ -131,9 +140,14 @@ static auto glfwScrollCallback(GLFWwindow* window, double x, double y) -> void {
     if (imguiEvent()) return;
 
     auto event = std::make_unique<MouseEvent>();
+    auto instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
     event->type = MouseEvent::Type::Scrolled;
     event->button = MouseButton::None;
+    event->position = {
+        static_cast<float>(instance->mouse_pos_x),
+        static_cast<float>(instance->mouse_pos_y)
+    };
     event->scroll = {static_cast<float>(x), static_cast<float>(y)};
 
     EventDispatcher::Get().Dispatch("mouse_event", std::move(event));

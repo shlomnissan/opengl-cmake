@@ -15,3 +15,7 @@ OrthographicCamera::OrthographicCamera(
 ) {
     projection_ = glm::ortho(left, right, bottom, top, near, far);
 }
+
+auto OrthographicCamera::OnUpdate() -> void {
+    view_ = glm::inverse(transform);
+}

@@ -13,6 +13,9 @@
 
 class Window {
 public:
+    double mouse_pos_x {0.0};
+    double mouse_pos_y {0.0};
+
     Window(int width, int height, std::string_view title);
 
     auto Start(const std::function<void(const double delta)>& program) -> void;

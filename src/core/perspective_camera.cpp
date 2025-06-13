@@ -18,3 +18,7 @@ PerspectiveCamera::PerspectiveCamera(
         far
     );
 }
+
+auto PerspectiveCamera::OnUpdate() -> void {
+    view_ = glm::inverse(transform);
+}

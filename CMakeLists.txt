@@ -45,6 +45,8 @@ set(CORE_SOURCES
     src/loaders/image_loader.cpp
     src/loaders/image_loader.h
     src/loaders/loader.h
+    src/resources/orbit_controls.cpp
+    src/resources/orbit_controls.h
 )
 
 set(DEMO_SOURCES

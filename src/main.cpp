@@ -13,13 +13,10 @@
 #include "core/shaders.h"
 #include "core/texture2d.h"
 #include "core/window.h"
-
-#include "shaders/headers/scene_vert.h"
-#include "shaders/headers/scene_frag.h"
-
 #include "geometries/box_geometry.h"
-
 #include "loaders/image_loader.h"
+#include "shaders/headers/scene_frag.h"
+#include "shaders/headers/scene_vert.h"
 
 auto main() -> int {
     const auto win_width = 1024;
@@ -28,6 +25,7 @@ auto main() -> int {
     auto window = Window {win_width, win_height, "OpenGL starter project"};
     auto ratio = static_cast<float>(win_width) / static_cast<float>(win_height);
     auto camera = PerspectiveCamera {45.0f, ratio, 0.1f, 100.0f};
+
     auto image_loader = ImageLoader::Create();
     auto texture = Texture2D {};
     auto geometry = BoxGeometry({
@@ -54,13 +52,9 @@ auto main() -> int {
 
     glEnable(GL_DEPTH_TEST);
 
-    auto view = glm::lookAt(
-        glm::vec3{0.0f, 0.0f, 1.0f},
-        glm::vec3{0.0f, 0.0f, 0.0f},
-        glm::vec3{0.0f, 1.0f, 0.0f}
-    );
+    camera.transform = glm::translate(camera.transform, {0.0f, 0.0f, 1.0f});
 
-    window.Start([&]([[maybe_unused]] const double _){
+    window.Start([&](const double delta){
         glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -68,12 +62,14 @@ auto main() -> int {
         ImGui::Text("Hello, world!");
         ImGui::End();
 
+        camera.OnUpdate();
+
         auto model = glm::mat4{1.0f};
         model = glm::scale(model, {0.3f, 0.3f, 0.3f});
         model = glm::rotate(model, static_cast<float>(glfwGetTime()), {1.0f, 1.0f, 1.0f});
 
         shader.SetUniform("u_Projection", camera.Projection());
-        shader.SetUniform("u_ModelView", view * model);
+        shader.SetUniform("u_ModelView", camera.View() * model);
 
         if (texture.IsLoaded()) {
             texture.Bind();
